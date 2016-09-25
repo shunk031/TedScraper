@@ -15,8 +15,13 @@ from ted_scraper import TEDScraper
 
 base_url = "https://www.ted.com/talks"
 
-ts = TEDScraper(base_url)
+# specify base URL and language
+ts = TEDScraper(base_url, lang="en")
+
+# get all talk links
 ts.get_all_talk_links()
+
+# get all talk topics
 ts.get_all_talk_topics()
 ```
 
