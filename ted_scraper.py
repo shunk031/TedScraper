@@ -5,9 +5,12 @@ from urllib.request import urlopen
 from urllib.parse import urljoin
 
 import time
+import re
 
 
 class TEDScraper:
+
+    LANG_URL = "https://www.ted.com/participate/translate/our-languages"
 
     def __init__(self, url, lang="en"):
         """
@@ -22,7 +25,8 @@ class TEDScraper:
         self.all_talk_topics = []
         self.all_talk_transcripts = []
 
-    def _make_soup(self, url):
+    @staticmethod
+    def make_soup(url):
         """
         URLからBeautifulSoupのインスタンスを返す。
         :param str url:
@@ -32,6 +36,32 @@ class TEDScraper:
             html = res.read()
 
         return BeautifulSoup(html, "lxml")
+
+    @staticmethod
+    def get_languages():
+        """
+        取得できる言語とそのシンボル、トーク数を返す。
+        :rtype:dict 
+        """
+        soup = TEDScraper.make_soup(TEDScraper.LANG_URL)
+        lang_div = soup.find_all("div", {"class": "languages__list__language"})
+        lang_info = []
+
+        for ld in lang_div:
+            lang_type = ld.find("a").get_text()
+            lang_symbol = ld.find("a").attrs['href'].replace(
+                "/talks?language=", "")
+            lang_talks = ld.get_text().replace("\n", "").replace(lang_type, "")
+            lang_talks = re.match("\d*", lang_talks)
+            lang_talks = lang_talks.group()
+
+            print("[DEBUG] get_language lang type: %-25s symbol: %-5s %s" %
+                  (lang_type, lang_symbol, lang_talks))
+
+            lang_info.append(
+                {"lang_type": lang_type, "lang_symbol": lang_symbol, "lang_talks": lang_talks})
+
+        return lang_info
 
     def get_talk_links(self, soup):
         """
@@ -52,7 +82,7 @@ class TEDScraper:
         """
         page_counter = 1
         while True:
-            soup = self._make_soup(self.target_url)
+            soup = TEDScraper.make_soup(self.target_url)
             talk_links = self.get_talk_links(soup)
             self.all_talk_links.append(talk_links)
             next_link = self.get_next_talk_list_a(soup)
@@ -118,7 +148,7 @@ class TEDScraper:
         for all_talk_link in self.all_talk_links:
             for atl in all_talk_link:
                 print("[DEBUG] get_all_talk_topics()\nTarget URL: %s" % atl)
-                soup = self._make_soup(atl)
+                soup = TEDScraper.make_soup(atl)
                 topic_list = self.get_talk_topics(soup)
 
                 print("[DEBUG] get_all_talk_topics()\nTopic List: %s" %
@@ -156,7 +186,7 @@ class TEDScraper:
                 target = self._get_transcript_url(atl)
                 print("[DEBUG] get_all_talk_transcripts()\nTarget URL: %s" % target)
 
-                soup = self._make_soup(target)
+                soup = TEDScraper.make_soup(target)
                 paragraph_list = self.get_talk_transcrpit(soup)
 
                 print("[DEBUG] get_all_talk_transcripts()\nPara List: %s\n" %
