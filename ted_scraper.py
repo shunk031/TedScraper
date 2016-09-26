@@ -15,11 +15,12 @@ class TEDScraper:
         :param str lang="en":
         """
         self.base_url = url
+        self.lang = lang
         self.target_url = self.base_url + "?language=" + lang
 
         self.all_talk_links = []
         self.all_talk_topics = []
-        self.all_talk_texts = []
+        self.all_talk_transcripts = []
 
     def _make_soup(self, url):
         """
@@ -116,31 +117,53 @@ class TEDScraper:
 
         for all_talk_link in self.all_talk_links:
             for atl in all_talk_link:
-                print("[DEBUG] all_talk_topics()\nTarget URL: %s" % atl)
+                print("[DEBUG] get_all_talk_topics()\nTarget URL: %s" % atl)
                 soup = self._make_soup(atl)
                 topic_list = self.get_talk_topics(soup)
 
-                print("[DEBUG] all_talk_topics()\nTopic List: %s" % topic_list)
+                print("[DEBUG] get_all_talk_topics()\nTopic List: %s" %
+                      topic_list)
 
                 self.all_talk_topics.append(topic_list)
                 time.sleep(2)
 
     def get_talk_transcrpit(self, soup):
-
+        """
+        ターゲットとなっているトークのTranscriptを取得する。
+        :param bs4.BeautifulSoup soup:
+        :rtype: List
+        """
         talk_transcript_para = self._find_transcript_para(soup)
+        # print("[DEBUG] get_talk_transcript()\n Transcript Para: %s" %
+        #       talk_transcript_para)
 
         paragraph_list = []
         for ttp in talk_transcript_para:
             tt = self._find_transcript_text(ttp)
             transcript_text = self._format_string(tt)
-            print("[DEBUG] get_talk_transcript()\n Transcript Text: %s" %
-                  transcript_text)
+            # print("[DEBUG] get_talk_transcript()\n Transcript Text: %s" %
+            #       transcript_text)
             paragraph_list.append(transcript_text)
 
         return paragraph_list
 
-    def get_all_transcript(self):
-        pass
+    def get_all_talk_transcripts(self):
+        """
+        すべてのトークのTranscriptを取得する。
+        """
+        for all_talk_link in self.all_talk_links:
+            for atl in all_talk_link:
+                target = self._get_transcript_url(atl)
+                print("[DEBUG] get_all_talk_transcripts()\nTarget URL: %s" % target)
+
+                soup = self._make_soup(target)
+                paragraph_list = self.get_talk_transcrpit(soup)
+
+                print("[DEBUG] get_all_talk_transcripts()\nPara List: %s\n" %
+                      paragraph_list)
+
+                self.all_talk_transcripts.append(paragraph_list)
+                time.sleep(2)
 
     def _find_talk_a(self, soup):
         """
@@ -160,17 +183,48 @@ class TEDScraper:
         return talk_topics_div.find_all("li", {"class": "talk-topics__item"})
 
     def _find_transcript_para(self, soup):
+        """
+        Transcriptのパラグラフタグを返す。
+        :param bs4.BeautifulSoup soup:
+        :rtype: bs4.element.ResultSet
+        """
         return soup.find_all("p", {"class": "talk-transcript__para"})
 
     def _find_transcript_text(self, soup):
+        """
+        Transcriptのパラグラフテキストを返す。
+        :param bs4.BeautifulSoup soup:
+        :rtype: bs4.element.ResultSet
+        """
         return soup.find("span", {"class": "talk-transcript__para__text"})
 
     def _format_string(self, s):
+        """
+        文字列をを整形して返す。
+        :param str s:
+        :rtype: str
+        """
         return s.get_text().replace("\n", "")
+
+    def _get_transcript_url(self, s):
+        """
+        トークへのリンクからトークのTranscriptへのリンクを生成する。
+        :param str s:
+        :rtype: str
+        """
+        r1 = "?language=" + self.lang
+        r2 = "/transcript?language=" + self.lang
+        transcript_url = s.replace(r1, r2)
+
+        return transcript_url
+
 
 if __name__ == '__main__':
 
     base_url = "https://www.ted.com/talks"
 
     ts = TEDScraper(base_url)
+
     ts.get_all_talk_links()
+    ts.get_all_talk_topics()
+    ts.get_all_talk_transcripts()
