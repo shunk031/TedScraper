@@ -56,7 +56,10 @@ class TEDScraper:
             self.all_talk_links.append(talk_links)
             next_link = self.get_next_talk_list_a(soup)
 
-            if next_link is None:
+            # DEBUG
+            # if next_link is None:
+            #     break
+            if next_link:
                 break
 
             page_counter += 1
@@ -92,13 +95,16 @@ class TEDScraper:
         """
 
         talk_topics_items = self._find_talk_topics(soup)
+        # print("[DEBUG] Now TEDScraper get_talk_topics() talk_topics_items = %s" %
+        #       talk_topics_items)
 
         topic_list = []
         for tti in talk_topics_items:
             topic = tti.find("a")
+
             if topic is not None:
                 topic = topic.get_text().replace("\n", "")
-                print(topic)
+                # print("[DEBUG] Now TEDScraper get_talk_topics() topic = %s" % topic)
                 topic_list.append(topic)
 
         return topic_list
@@ -110,9 +116,31 @@ class TEDScraper:
 
         for all_talk_link in self.all_talk_links:
             for atl in all_talk_link:
-
-                print("Target URL: %s" % atl)
+                print("[DEBUG] all_talk_topics()\nTarget URL: %s" % atl)
                 soup = self._make_soup(atl)
+                topic_list = self.get_talk_topics(soup)
+
+                print("[DEBUG] all_talk_topics()\nTopic List: %s" % topic_list)
+
+                self.all_talk_topics.append(topic_list)
+                time.sleep(2)
+
+    def get_talk_transcrpit(self, soup):
+
+        talk_transcript_para = self._find_transcript_para(soup)
+
+        paragraph_list = []
+        for ttp in talk_transcript_para:
+            tt = self._find_transcript_text(ttp)
+            transcript_text = self._format_string(tt)
+            print("[DEBUG] get_talk_transcript()\n Transcript Text: %s" %
+                  transcript_text)
+            paragraph_list.append(transcript_text)
+
+        return paragraph_list
+
+    def get_all_transcript(self):
+        pass
 
     def _find_talk_a(self, soup):
         """
@@ -128,9 +156,17 @@ class TEDScraper:
         :param bs4.BeautifulSoup soup:
         :rtype: bs4.element.ResultSet
         """
-        talk_topics_div = soup.find("div", {"class", "talk-tipics"})
-        return talk_topics_div.find_all("li", {"class": "talk_topics__item"})
+        talk_topics_div = soup.find("div", {"class", "talk-topics"})
+        return talk_topics_div.find_all("li", {"class": "talk-topics__item"})
 
+    def _find_transcript_para(self, soup):
+        return soup.find_all("p", {"class": "talk-transcript__para"})
+
+    def _find_transcript_text(self, soup):
+        return soup.find("span", {"class": "talk-transcript__para__text"})
+
+    def _format_string(self, s):
+        return s.get_text().replace("\n", "")
 
 if __name__ == '__main__':
 
