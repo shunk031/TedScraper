@@ -21,6 +21,7 @@ class TEDScraper:
         self.lang = lang
         self.target_url = self.base_url + "?language=" + lang
 
+        self.all_talk_topics = []
         self.all_talk_links = []
         self.all_talk_topics = []
         self.all_talk_transcripts = []
@@ -41,12 +42,12 @@ class TEDScraper:
     def get_languages():
         """
         取得できる言語とそのシンボル、トーク数を返す。
-        :rtype:dict 
+        :rtype dict
         """
         soup = TEDScraper.make_soup(TEDScraper.LANG_URL)
         lang_div = soup.find_all("div", {"class": "languages__list__language"})
-        lang_info = []
 
+        lang_info = []
         for ld in lang_div:
             lang_type = ld.find("a").get_text()
             lang_symbol = ld.find("a").attrs['href'].replace(
@@ -62,6 +63,15 @@ class TEDScraper:
                 {"lang_type": lang_type, "lang_symbol": lang_symbol, "lang_talks": lang_talks})
 
         return lang_info
+
+    def get_talk_titles(self, soup):
+        talk_titles = soup.find_all("div", {"class": "talk-link"})
+        talk_titles = [self._get_talk_title(tt) for tt in talk_titles]
+
+        return talk_titles
+
+    def get_all_talk_titles(self):
+        pass
 
     def get_talk_links(self, soup):
         """
@@ -202,6 +212,13 @@ class TEDScraper:
         :rtype: str
         """
         return soup.find("h4", {"class": "h9"}).find("a").attrs['href']
+
+    def _get_talk_title(self, soup):
+        """
+        :param bs4.BeautifulSoup soup:
+        :rtype: str
+        """
+        return soup.find("h4", {"class": "h9"}).find("a").get_text()
 
     def _find_talk_topics(self, soup):
         """
