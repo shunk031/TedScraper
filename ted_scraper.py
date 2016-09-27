@@ -296,19 +296,19 @@ class TEDScraper:
     def get_all_language_transcript(self, talk_url):
 
         all_lang_transcript = []
-        lang_info = TEDScraper.get_languages()
-        for info_dict in lang_info:
-            lang_symbol = info_dict["lang_symbol"]
-            transcript_url = self._get_transcript_url(talk_url, lang_symbol)
+        available_lang = self.get_available_language(talk_url)
+
+        for al in available_lang:
+            transcript_url = self._get_transcript_url(talk_url, al)
 
             print("[DEBUG] in get_all_language_transcript()")
             print("[DEBUG] symbol: %-5s URL: %s\n" %
-                  (lang_symbol, transcript_url))
+                  (al, transcript_url))
 
             t_soup = TEDScraper.make_soup(transcript_url)
             if t_soup is not None:
                 transcript_dict = {
-                    lang_symbol: self.get_talk_transcrpit(t_soup)
+                    al: self.get_talk_transcrpit(t_soup)
                 }
                 all_lang_transcript.append(transcript_dict)
 
