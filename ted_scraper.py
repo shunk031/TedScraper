@@ -3,6 +3,7 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 from urllib.parse import urljoin
+from urllib.error import HTTPError
 
 import time
 import re
@@ -33,7 +34,11 @@ class TEDScraper:
         :rtype: bs4.BeautifulSoup
         """
         with urlopen(url) as res:
-            html = res.read()
+            try:
+                html = res.read()
+            except HTTPError as e:
+                print("[DEBUG] Raise HTTPError exception: %s" % e)
+                return None
 
         return BeautifulSoup(html, "lxml")
 
