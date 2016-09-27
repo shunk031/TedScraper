@@ -55,6 +55,7 @@ Output result when using `dump_talk_info()`.
 	"Updated Date" : "2016-01-02",
 	"Talk Title" : "talk-title",
 	"Talk Link Adress" : "https://www.ted.com/talks/hoge",
+	"Language" : "en"
 	"Topics" : ["topic1", "topic2", "topic3"],
 	"Transcript Text" : ["sentence1", "sentence2", "sentence3", "sentence4"]
 }
