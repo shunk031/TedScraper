@@ -55,7 +55,7 @@ Output result when using `dump_talk_info()`.
 	"Updated Date" : "2016-01-02",
 	"Talk Title" : "talk-title",
 	"Talk Link Adress" : "https://www.ted.com/talks/hoge",
-	"Language" : "en"
+	"Language" : "en",
 	"Topics" : ["topic1", "topic2", "topic3"],
 	"Transcript Text" : ["sentence1", "sentence2", "sentence3", "sentence4"]
 }
@@ -72,9 +72,9 @@ Output result when using `dump_talk_info_al()`.
 	"Talk Link Adress" : "https://www.ted.com/talks/hoge",
 	"Topics" : ["topic1", "topic2", "topic3"],
 	"Transcript Text" : {
-		en : ["sentence1", "sentence2", "sentence3", "sentence4"],
-		ja : ["文1", "文2", "文3"],
-		cn : ["句子1", "句子2", "句子3"]
+		"en" : ["sentence1", "sentence2", "sentence3", "sentence4"],
+		"ja" : ["文1", "文2", "文3"],
+		"cn" : ["句子1", "句子2", "句子3"]
 	}
 }
 ```
