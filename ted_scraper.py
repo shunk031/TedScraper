@@ -33,12 +33,14 @@ class TEDScraper:
         :param str url:
         :rtype: bs4.BeautifulSoup
         """
-        with urlopen(url) as res:
-            try:
+        try:
+            with urlopen(url) as res:
+                print("[DEBUG] in make_soup() : Found: %s" % url)
                 html = res.read()
-            except HTTPError as e:
-                print("[DEBUG] Raise HTTPError exception: %s" % e)
-                return None
+
+        except HTTPError as e:
+            print("[DEBUG] in make_soup() : Raise HTTPError exception: %s" % e)
+            return None
 
         return BeautifulSoup(html, "lxml")
 
@@ -46,7 +48,7 @@ class TEDScraper:
     def get_languages():
         """
         取得できる言語とそのシンボル、トーク数を返す。
-        :rtype dict
+        :rtype list
         """
         soup = TEDScraper.make_soup(TEDScraper.LANG_URL)
         lang_div = soup.find_all("div", {"class": "languages__list__language"})
@@ -238,7 +240,7 @@ class TEDScraper:
         all_talk_transcript_time = []
         for all_talk_link in all_talk_links:
             for atl in all_talk_link:
-                target = self._get_transcript_url(atl)
+                target = self._get_transcript_url(atl, self.lang)
 
                 soup = TEDScraper.make_soup(target)
                 time_list = self.get_talk_transcript_time(soup)
@@ -277,7 +279,7 @@ class TEDScraper:
         all_talk_transcripts = []
         for all_talk_link in all_talk_links:
             for atl in all_talk_link:
-                target = self._get_transcript_url(atl)
+                target = self._get_transcript_url(atl, self.lang)
                 # print("[DEBUG] get_all_talk_transcripts()\nTarget URL: %s" % target)
 
                 soup = TEDScraper.make_soup(target)
@@ -318,7 +320,7 @@ class TEDScraper:
         for tl in talk_links:
             s = TEDScraper.make_soup(tl)
             talk_topics.append(self.get_talk_topics(s))
-            transcript_url = self._get_transcript_url(tl)
+            transcript_url = self._get_transcript_url(tl, self.lang)
             s = TEDScraper.make_soup(transcript_url)
             talk_transcript.append(self.get_talk_transcrpit(s))
 
@@ -398,14 +400,14 @@ class TEDScraper:
         """
         return s.get_text().replace("\n", "")
 
-    def _get_transcript_url(self, s):
+    def _get_transcript_url(self, s, lang="en"):
         """
         トークへのリンクからトークのTranscriptへのリンクを生成する。
         :param str s:
         :rtype: str
         """
-        r1 = "?language=" + self.lang
-        r2 = "/transcript?language=" + self.lang
+        r1 = "?language=" + lang
+        r2 = "/transcript?language=" + lang
 
         is_match = re.match(".*(\?language=).*", s)
         if is_match:
