@@ -391,7 +391,7 @@ class TEDScraper:
         :param str s:
         :rtype: str
         """
-        return s.get_text().strip()
+        return s.get_text().replace("\n", "")
 
     def _get_transcript_url(self, s):
         """
