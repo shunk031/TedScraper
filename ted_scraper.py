@@ -208,10 +208,40 @@ class TEDScraper:
         return all_talk_topics
 
     def get_talk_transcript_time(self, soup):
-        pass
+        """
+        ターゲットとなっているトークのTranscript Timeを取得する。
+        :param bs4.BeautifulSoup soup:
+        :rtype: list
+        """
+        talk_transcript_para = self._find_transcript_para(soup)
+
+        time_list = []
+        for ttp in talk_transcript_para:
+            tt = self._find_transcript_time(ttp)
+            transcript_time = self._format_string(tt)
+            time_list.append(transcript_time)
+
+        return time_list
 
     def get_all_talk_transcript_time(self, all_talk_links):
-        pass
+        """
+        すべてのトークのTranscript Timeを取得する。
+        :param list all_talk_links:
+        :rtype: list
+        """
+
+        all_talk_transcript_time = []
+        for all_talk_link in all_talk_links:
+            for atl in all_talk_link:
+                target = self._get_transcript_url(atl)
+
+                soup = TEDScraper.make_soup(target)
+                time_list = self.get_talk_transcript_time(soup)
+
+                all_talk_transcript_time.append(time_list)
+                time.sleep(1)
+
+        return all_talk_transcript_time
 
     def get_talk_transcrpit(self, soup):
         """
@@ -351,6 +381,9 @@ class TEDScraper:
         :rtype: bs4.element.ResultSet
         """
         return soup.find("span", {"class": "talk-transcript__para__text"})
+
+    def _find_transcript_time(self, soup):
+        return soup.find("data", {"class": "talk-transcript__para__time"})
 
     def _format_string(self, s):
         """
