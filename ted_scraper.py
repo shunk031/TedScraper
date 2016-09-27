@@ -283,18 +283,16 @@ class TEDScraper:
 
         # dump talk info
         print("Now dump talk info ...")
-        dump_data = []
         for date, title, link, topics, transcript in zip(talk_date, talk_titles, talk_links, talk_topics, talk_transcript):
             talk_info = {
                 "posted_date": date,
                 "update_date": update_date,
                 "talk_title": title,
                 "talk_link": link,
-                "talk_lang": self.lang,
+                "talk_lang": talk_lang,
                 "talk_topics": topics,
                 "talk_transcript": transcript
             }
-            dump_data.append(talk_info)
 
             with open("./dump_files/talk_info_" + title + ".json", "w") as f:
                 json.dump(talk_info, f, indent=2)
