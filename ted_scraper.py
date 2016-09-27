@@ -86,7 +86,7 @@ class TEDScraper:
                 title_list = self.get_talk_titles(soup)
 
                 all_talk_titles.append(title_list)
-                time.sleep(2)
+                time.sleep(1)
 
         return all_talk_titles
 
@@ -141,7 +141,7 @@ class TEDScraper:
             print("Now page: %d\n%s" % (page_counter, next_link))
 
             self.target_url = next_link
-            time.sleep(2)
+            time.sleep(1)
 
         return all_talk_links
 
@@ -203,7 +203,7 @@ class TEDScraper:
                 #       topic_list)
 
                 all_talk_topics.append(topic_list)
-                time.sleep(2)
+                time.sleep(1)
 
         return all_talk_topics
 
@@ -246,7 +246,7 @@ class TEDScraper:
                 #       paragraph_list)
 
                 all_talk_transcripts.append(paragraph_list)
-                time.sleep(2)
+                time.sleep(1)
 
         return all_talk_transcripts
 
