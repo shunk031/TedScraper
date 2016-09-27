@@ -51,7 +51,7 @@ class TEDScraper:
             lang_type = ld.find("a").get_text()
             lang_symbol = ld.find("a").attrs['href'].replace(
                 "/talks?language=", "")
-            lang_talks = ld.get_text().replace("\n", "").replace(lang_type, "")
+            lang_talks = ld.get_text().strip().replace(lang_type, "")
             lang_talks = re.match("\d*", lang_talks)
             lang_talks = lang_talks.group()
 
@@ -180,7 +180,7 @@ class TEDScraper:
             topic = tti.find("a")
 
             if topic is not None:
-                topic = topic.get_text().replace("\n", "")
+                topic = topic.get_text().strip()
                 # print("[DEBUG] Now TEDScraper get_talk_topics() topic = %s" % topic)
                 topic_list.append(topic)
 
@@ -358,7 +358,7 @@ class TEDScraper:
         :param str s:
         :rtype: str
         """
-        return s.get_text().replace("\n", "")
+        return s.get_text().strip()
 
     def _get_transcript_url(self, s):
         """
