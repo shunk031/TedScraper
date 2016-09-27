@@ -207,6 +207,12 @@ class TEDScraper:
 
         return all_talk_topics
 
+    def get_talk_transcript_time(self, soup):
+        pass
+
+    def get_all_talk_transcript_time(self, all_talk_links):
+        pass
+
     def get_talk_transcrpit(self, soup):
         """
         ターゲットとなっているトークのTranscriptを取得する。
