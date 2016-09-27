@@ -401,7 +401,12 @@ class TEDScraper:
         """
         r1 = "?language=" + self.lang
         r2 = "/transcript?language=" + self.lang
-        transcript_url = s.replace(r1, r2)
+
+        is_match = re.match(".*(\?language=).*", s)
+        if is_match:
+            transcript_url = s.replace(r1, r2)
+        else:
+            transcript_url = s + r2
 
         return transcript_url
 
