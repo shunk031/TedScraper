@@ -293,6 +293,40 @@ class TEDScraper:
 
         return all_talk_transcripts
 
+    def get_all_language_transcript(self, talk_url):
+
+        all_lang_transcript = []
+        lang_info = TEDScraper.get_languages()
+        for info_dict in lang_info:
+            lang_symbol = info_dict["lang_symbol"]
+            transcript_url = self._get_transcript_url(talk_url, lang_symbol)
+
+            print("[DEBUG] in get_all_language_transcript()")
+            print("[DEBUG] symbol: %-5s URL: %s\n" %
+                  (lang_symbol, transcript_url))
+
+            t_soup = TEDScraper.make_soup(transcript_url)
+            if t_soup is not None:
+                transcript_dict = {
+                    lang_symbol: self.get_talk_transcrpit(t_soup)
+                }
+                all_lang_transcript.append(transcript_dict)
+
+        return all_lang_transcript
+
+    def get_available_language(self, talk_url):
+
+        transcript_url = self._get_transcript_url(talk_url)
+        soup = TEDScraper.make_soup(transcript_url)
+        talk_transcript_language = soup.find(
+            "select", {"class": "talk-transcript__language"}).find_all("option")
+
+        available_lang = []
+        for ttl in talk_transcript_language:
+            available_lang.append(ttl.attrs["value"])
+
+        return available_lang
+
     def dump_talk_info(self, url):
         """
         URLから各トークのトーク情報をJSONファイルとして出力する。
