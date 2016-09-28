@@ -47,7 +47,7 @@ ts.dump_talk_info(target_url)
 
 ### Output Example
 
-Output result when using `dump_talk_info()`.
+Output result when using `TEDScraper#dump_talk_info()`.
 
 ``` json
 {
@@ -57,12 +57,13 @@ Output result when using `dump_talk_info()`.
 	"Talk Link Adress" : "https://www.ted.com/talks/hoge",
 	"Language" : "en",
 	"Topics" : ["topic1", "topic2", "topic3"],
-	"Transcript Text" : ["sentence1", "sentence2", "sentence3", "sentence4"]
+	"Transcript Text" : ["sentence1", "sentence2", "sentence3", "sentence4"],
+	"Transcript Time" : ["00:00", "00:01", "00:12"]
 }
 ```
 
 
-Output result when using `dump_talk_info_al()`.
+Output result when using `TEDScraper#dump_talk_info_al()`.
 
 ``` json
 {
@@ -75,6 +76,7 @@ Output result when using `dump_talk_info_al()`.
 		"en" : ["sentence1", "sentence2", "sentence3", "sentence4"],
 		"ja" : ["文1", "文2", "文3"],
 		"cn" : ["句子1", "句子2", "句子3"]
-	}
+	},
+	"Transcript Time" : ["00:00", "00:01", "00:12"]
 }
 ```
