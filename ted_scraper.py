@@ -24,8 +24,6 @@ class TEDScraper:
         self.lang = lang
         self.target_url = TEDScraper.BASE_URL + "?language=" + lang
 
-        self.all_talk_transcripts = []
-
     @staticmethod
     def make_soup(url):
         """
@@ -35,11 +33,12 @@ class TEDScraper:
         """
         try:
             with urlopen(url) as res:
-                print("[DEBUG] in make_soup() : Found: %s" % url)
+                # print("[DEBUG] in make_soup() : Found: %s" % url)
                 html = res.read()
 
         except HTTPError as e:
-            print("[DEBUG] in make_soup() : Raise HTTPError exception: %s" % e)
+            print("[DEBUG] in make_soup() : Raise HTTPError exception:")
+            print("[DEBUG] URL: %s %s" % (url, e))
             return None
 
         return BeautifulSoup(html, "lxml")
@@ -103,7 +102,6 @@ class TEDScraper:
         :param bs4.BeautifulSoup soup:
         :rtype: list
         """
-
         posted_dates = soup.find_all("div", {"class": "talk-link"})
         posted_dates = [self._find_talk_posted_date(
             tpd) for tpd in posted_dates]
@@ -132,16 +130,14 @@ class TEDScraper:
         """
         all_talk_links = []
         page_counter = 1
+
         while True:
             soup = TEDScraper.make_soup(self.target_url)
             talk_links = self.get_talk_links(soup)
             all_talk_links.append(talk_links)
             next_link = self.get_next_talk_list_a(soup)
 
-            # DEBUG
-            # if next_link is None:
-            #     break
-            if next_link:
+            if next_link is None:
                 break
 
             page_counter += 1
@@ -468,13 +464,3 @@ class TEDScraper:
         tdatetime = tdatetime.strftime("%Y-%m-%d")
         # print("[DEBUG] _convert_date2str() %s" % tdatetime)
         return tdatetime
-
-if __name__ == '__main__':
-
-    base_url = "https://www.ted.com/talks"
-
-    ts = TEDScraper(base_url)
-
-    ts.get_all_talk_links()
-    ts.get_all_talk_topics()
-    ts.get_all_talk_transcripts()
