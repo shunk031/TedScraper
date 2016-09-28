@@ -240,7 +240,7 @@ class TEDScraper:
         time_list = []
         for ttp in talk_transcript_para:
             tt = self._find_transcript_time(ttp)
-            transcript_time = self._format_string(tt)
+            transcript_time = self._format_string(tt).replace(" ", "")
             time_list.append(transcript_time)
 
         return time_list
@@ -313,26 +313,27 @@ class TEDScraper:
         ターゲットなるトークで利用できるすべての言語の
         Transcriptを取得する。
         :param str talk_url:
-        :rtype: list
+        :rtype: dict
         """
-        all_lang_transcript = []
+        t_dict = {}
         available_lang = self.get_available_language(talk_url)
 
         for al in available_lang:
             t_url = TEDScraper.get_transcript_url(talk_url, al)
 
-            print("[DEBUG] in get_all_language_transcript()")
-            print("[DEBUG] symbol: %-5s URL: %s\n" %
-                  (al, t_url))
+            # print("[DEBUG] in get_all_language_transcript()")
+            # print("[DEBUG] symbol: %-5s URL: %s\n" %
+            #       (al, t_url))
 
             t_soup = TEDScraper.make_soup(t_url)
             if t_soup is not None:
-                transcript_dict = {
-                    al: self.get_talk_transcrpit(t_soup)
-                }
-                all_lang_transcript.append(transcript_dict)
+                t_dict[al] = self.get_talk_transcrpit(t_soup)
 
-        return all_lang_transcript
+                # [DEBUG] dump json file
+                # with open("./dump_files/talk_info_al" + str(num) + ".json", "w") as f:
+                #     json.dump(t_dict, f, indent=2)
+
+        return t_dict
 
     def get_available_language(self, talk_url):
         """
@@ -351,12 +352,12 @@ class TEDScraper:
 
         return available_lang
 
-    def dump_talk_info(self, url):
+    def dump_talk_info(self, talk_url):
         """
-        URLから各トークのトーク情報をJSONファイルとして出力する。
+        トーク一覧URLから各トークのトーク情報をJSONファイルとして出力する。
         :param str url:
         """
-        soup = TEDScraper.make_soup(url)
+        soup = TEDScraper.make_soup(talk_url)
 
         print("Now get scrape date ...")
         update_date = self._get_scrape_date()
@@ -396,6 +397,63 @@ class TEDScraper:
             }
 
             with open("./dump_files/talk_info_" + title + ".json", "w") as f:
+                json.dump(talk_info, f, indent=2)
+
+    def dump_talk_info_al(self, talk_url):
+        """
+        トーク一覧URLから投稿日、データ収集日、トークタイトル、トークへのリンク、
+        トークのトピック、利用できる言語すべてのTranscriptをJSONファイルとして出力する。
+        :param str talk_url:
+        """
+        soup = TEDScraper.make_soup(talk_url)
+
+        print("[ GET ] get scrape date ...")
+        update_date = self._get_scrape_date()
+        print("[ GET ] get talk posted date ...")
+        talk_date = self.get_talk_posted_date(soup)
+        print("[ GET ] get talk titles ...")
+        talk_titles = self.get_talk_titles(soup)
+        print("[ GET ] get talk links ...")
+        talk_links = self.get_talk_links(soup)
+
+        talk_topics = []
+        talk_transcript = []
+        transcript_time = []
+        talk_num = len(talk_links)
+        print("[ GET ] get talk topics and transcripts ...")
+        for i, tl in enumerate(talk_links):
+            soup = TEDScraper.make_soup(tl)
+            print("  [%d/%d] Target URL: %s" % (i, talk_num, tl))
+            print("          [ GET ] get talk topics")
+            talk_topics.append(self.get_talk_topics(soup))
+            print("          [ GET ] get all language talk transcript")
+            talk_transcript.append(self.get_all_language_transcript(tl))
+            t_url = TEDScraper.get_transcript_url(tl)
+            print("          Target transcript URL: %s" % t_url)
+            t_soup = TEDScraper.make_soup(t_url)
+            print("            [ GET ] get transcript time")
+            transcript_time.append(self.get_talk_transcript_time(t_soup))
+
+            print("[ DUMP ] dump talk info ... ")
+
+        for date, title, link, topics, transcript, t_time in zip(talk_date, talk_titles, talk_links, talk_topics, talk_transcript, transcript_time):
+            print("         Title: %s, Posted Date: %s, Update Date: %s" %
+                  (title, update_date, date))
+            print("         Link Address: %s" % link)
+            talk_info = {
+                "posted_date": date,
+                "update_date": update_date,
+                "talk_title": title,
+                "talk_link": link,
+                "talk_topics": topics,
+                "talk_transcript": transcript,
+                "transcript_time": t_time
+            }
+
+            filename = "./dump_files/talk_info_al_%s.json" % title
+            filename = self._format_filename(filename)
+            print("  [ DUMP ] Now dump %s" % filename)
+            with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
 
     def _find_talk_posted_date(self, soup):
@@ -462,6 +520,14 @@ class TEDScraper:
         :rtype: str
         """
         return s.get_text().replace("\n", "")
+
+    def _format_filename(self, s):
+        """
+        ファイル名のスペースをアンダーバーに変換する。
+        :param str s:
+        :rtype: str
+        """
+        return s.replace(" ", "_")
 
     def _get_scrape_date(self):
         """
