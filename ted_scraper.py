@@ -89,6 +89,7 @@ class TEDScraper:
 
     def get_talk_titles(self, soup):
         """
+        トークのタイトルを取得する。
         :param bs4.BeautifulSoup soup:
         :rtype: list
         """
@@ -308,7 +309,12 @@ class TEDScraper:
         return all_talk_transcripts
 
     def get_all_language_transcript(self, talk_url):
-
+        """
+        ターゲットなるトークで利用できるすべての言語の
+        Transcriptを取得する。
+        :param str talk_url:
+        :rtype: list
+        """
         all_lang_transcript = []
         available_lang = self.get_available_language(talk_url)
 
@@ -329,7 +335,11 @@ class TEDScraper:
         return all_lang_transcript
 
     def get_available_language(self, talk_url):
-
+        """
+        ターゲットとなるトークで利用できる言語を返す。
+        :param str talk_url:
+        :rtype: list
+        """
         transcript_url = TEDScraper.get_transcript_url(talk_url)
         soup = TEDScraper.make_soup(transcript_url)
         talk_transcript_language = soup.find(
@@ -438,6 +448,11 @@ class TEDScraper:
         return soup.find("span", {"class": "talk-transcript__para__text"})
 
     def _find_transcript_time(self, soup):
+        """
+        Transciprt timeのタグを返す。
+        :param bs4.BeautifulSoup soup:
+        :rtype: bs4.element.ResultSet
+        """
         return soup.find("data", {"class": "talk-transcript__para__time"})
 
     def _format_string(self, s):
@@ -458,6 +473,8 @@ class TEDScraper:
 
     def _convert_date2str(self, date):
         """
+        今日の年月日をdatetime型で読めるような
+        文字列フォーマットに変換する。
         :param str date:
         :rtype: str
         """
