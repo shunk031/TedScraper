@@ -12,5 +12,5 @@ setup(
     keywords='TED Talks, TED, scraper, scraping',
     install_requires=['beautifulsoup4', 'lxml'],
     license='http://www.apache.org/licenses/LICENSE-2.0',
-    test_suite='test.test_scraper'
+    test_suite='tests.test_scraper'
 )
