@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from ted_scraper import TEDScraper
+from ted_talks.scraper import TEDScraper
 
 
 class TEDScraperTest(unittest.TestCase):
@@ -93,3 +93,5 @@ class TEDScraperTest(unittest.TestCase):
             test_talk_url)
 
         self.assertIsNot(len(available_lang), 0)
+if __name__ == '__main__':
+    unittest.main()
