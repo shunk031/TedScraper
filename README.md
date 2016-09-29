@@ -5,7 +5,8 @@ Scraper for [TED Talks](https://www.ted.com/talks).
 ## Requirement
 	
 * Python 3.5
-* BeautifulSoup
+* BeautifulSoup4
+* lxml
 
 ## Usage
 
