@@ -129,7 +129,20 @@ class TEDScraper:
         return posted_dates
 
     def get_all_talk_posted_date(self, all_talk_links):
-        pass
+        """
+        すべてのトークの投稿日のリストを返す。
+        :param list all_talk_links:
+        :rtype: list
+        """
+        all_talk_posted_date = []
+        for all_talk_link in all_talk_links:
+            for atl in all_talk_links:
+                soup = TEDScraper.make_soup(atl)
+                posted_date = self.get_talk_posted_date(soup)
+                all_talk_posted_date.append(posted_date)
+                time.sleep(1)
+
+        return all_talk_posted_date
 
     def get_talk_links(self, soup):
         """
@@ -213,7 +226,7 @@ class TEDScraper:
 
     def get_all_talk_topics(self, all_talk_links):
         """
-        すべてのトークのトピックのリストを返す
+        すべてのトークのトピックのリストを返す。
         :param list all_talk_links:
         :rtype: list
         """
