@@ -14,7 +14,7 @@ Scraper for [TED Talks](https://www.ted.com/talks).
 
 ``` python
 
-from ted_scraper import TEDScraper
+from ted_talks.scraper import TEDScraper
 
 # available languages in TED Talks
 print(TEDScraper.get_langurages())
@@ -35,7 +35,7 @@ all_talk_transcripts = ts.get_all_transcripts(all_talk_links)
 ts.dump_talk_info(target_url)
 
 # dump talk-info with all languages json file
-# ts.dump_talk_info_al(target_url)
+ts.dump_talk_info_al(target_url)
 ```
 
 ## Outputs
