@@ -128,6 +128,9 @@ class TEDScraper:
 
         return posted_dates
 
+    def get_all_talk_posted_date(self, all_talk_links):
+        pass
+
     def get_talk_links(self, soup):
         """
         現在のトーク一覧から各トークへのリンクを取得し、
@@ -359,23 +362,21 @@ class TEDScraper:
         """
         soup = TEDScraper.make_soup(talk_url)
 
-        print("Now get scrape date ...")
+        print("[ GET ] get scrape date ...")
         update_date = self._get_scrape_date()
-
-        print("Now get talk posted date ...")
+        print("[ GET ] get talk posted date ...")
         talk_date = self.get_talk_posted_date(soup)
-
-        print("Now get talk titles ...")
+        print("[ GET ] get talk titles ...")
         talk_titles = self.get_talk_titles(soup)
-
-        print("Now get talk links ...")
+        print("[ GET ] get talk links ...")
         talk_links = self.get_talk_links(soup)
 
-        print("Now get talk language ...")
+        print("[ GET ] get talk language ...")
         talk_lang = self.lang
 
         talk_topics = []
         talk_transcript = []
+        print("[ GET ] get talk topics and transcripts ...")
         for tl in talk_links:
             s = TEDScraper.make_soup(tl)
             talk_topics.append(self.get_talk_topics(s))
