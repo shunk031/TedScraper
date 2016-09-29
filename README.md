@@ -1,5 +1,7 @@
 # TED Talks Scraper
 
+[![Build Status](https://travis-ci.org/shunk031/ted-scraper.svg?branch=master)](https://travis-ci.org/shunk031/ted-scraper)
+
 Scraper for [TED Talks](https://www.ted.com/talks).
 
 ## Requirement
