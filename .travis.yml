@@ -1,14 +1,13 @@
 language: python
-
 python:
   - 3.2
   - 3.3
   - 3.4
   - 3.5
-
 before_install:
   - sudo apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev
-  
 install:
   - pip install beautifulsoup4 lxml
-
+notifications:
+  slack:
+    secure: AAAbs753QsH2/CPgoMoICwYhpMLj/07gEFfbkSr1Kx5pGGo79J4c6+26JKKS1FSXW3ltp7EFXsW/sv1xVi8vXOZQopEvaeJ0voKgVph/MhFAwGa70EdK2hH4svYcSmdeHUivZXxhv5s230dBUHS7BuRVlaztM20hMx9D5MWo6z/4ASAQBEyzPx1wvQO8TJ3SH1TmSlvoQV/0QeKmG6xkwwggsaU29wzjR/hypFrdqIamipe6uTBjiZiCIqSOlW2trednaP7XGI0KPZYJVsQODD/GhzkoMIwApDODFBPcjOWyYioLlq38OCToMGZ8Rr5/OdmQ4+3lFhnWD45V62F+/lMYJplbmPyQyQIM7j4acC4pZH3eAHfDYGJteZxyFCW3bDFZwbYLSKQUWRuXZ4QqMmj7Y+FjnV6oUMscTlue+tyFdnrg7+VDuqjY/D2HQMFD+wIgPqE8NCbMEi4HZIm9xExZ3RyiasYHExuvC142YyMGuVJQqd6W4vPezdw+xWUuvdN7NVK58TlbyzggzVpfYzRufNb9A66W16TTVk7zDnJ+fIa8m3TvwqmMMJr1S7JNRQQd38hKYxUtRV7/F06wPcaF5P0CyXJHEHx9UpMt/7KPhhk/tNlsC+6ZKEm1O/hlrJU6W3s/eXz9CufhOo+aKXqHMlARgDmX8pW4vtIwALc=
