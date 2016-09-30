@@ -93,5 +93,12 @@ class TEDScraperTest(unittest.TestCase):
             test_talk_url)
 
         self.assertIsNot(len(available_lang), 0)
+
+    def test_dump_talk_info(self):
+        pass
+
+    def test_dump_talk_info_al(self):
+        pass
+
 if __name__ == '__main__':
     unittest.main()

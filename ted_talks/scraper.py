@@ -9,6 +9,7 @@ import time
 import re
 import datetime
 import json
+import os
 
 
 class TEDScraper:
@@ -111,7 +112,7 @@ class TEDScraper:
                 title_list = self.get_talk_titles(soup)
 
                 all_talk_titles.append(title_list)
-                time.sleep(1)
+                # time.sleep(1)
 
         return all_talk_titles
 
@@ -140,7 +141,7 @@ class TEDScraper:
                 soup = TEDScraper.make_soup(atl)
                 posted_date = self.get_talk_posted_date(soup)
                 all_talk_posted_date.append(posted_date)
-                time.sleep(1)
+                # time.sleep(1)
 
         return all_talk_posted_date
 
@@ -165,7 +166,7 @@ class TEDScraper:
         """
         all_talk_links = []
         page_counter = 1
-
+        page_list = []
         while True:
             soup = TEDScraper.make_soup(self.target_url)
             talk_links = self.get_talk_links(soup)
@@ -179,9 +180,10 @@ class TEDScraper:
             print("Now page: %d\n%s" % (page_counter, next_link))
 
             self.target_url = next_link
-            time.sleep(1)
+            page_list.append(next_link)
+            # time.sleep(1)
 
-        return all_talk_links
+        return all_talk_links, page_list
 
     def get_next_talk_list_a(self, soup):
         """
@@ -241,7 +243,7 @@ class TEDScraper:
                 #       topic_list)
 
                 all_talk_topics.append(topic_list)
-                time.sleep(1)
+                # time.sleep(1)
 
         return all_talk_topics
 
@@ -277,7 +279,7 @@ class TEDScraper:
                 time_list = self.get_talk_transcript_time(t_soup)
 
                 all_talk_transcript_time.append(time_list)
-                time.sleep(1)
+                # time.sleep(1)
 
         return all_talk_transcript_time
 
@@ -320,7 +322,7 @@ class TEDScraper:
                 #       paragraph_list)
 
                 all_talk_transcripts.append(paragraph_list)
-                time.sleep(1)
+                # time.sleep(1)
 
         return all_talk_transcripts
 
@@ -368,7 +370,7 @@ class TEDScraper:
 
         return available_lang
 
-    def dump_talk_info(self, talk_url):
+    def dump_talk_info(self, talk_url, save_dir):
         """
         トーク一覧URLから各トークのトーク情報をJSONファイルとして出力する。
         :param str url:
@@ -383,23 +385,36 @@ class TEDScraper:
         talk_titles = self.get_talk_titles(soup)
         print("[ GET ] get talk links ...")
         talk_links = self.get_talk_links(soup)
-
         print("[ GET ] get talk language ...")
         talk_lang = self.lang
 
         talk_topics = []
         talk_transcript = []
+        transcript_time = []
+        talk_num = len(talk_links)
         print("[ GET ] get talk topics and transcripts ...")
-        for tl in talk_links:
-            s = TEDScraper.make_soup(tl)
-            talk_topics.append(self.get_talk_topics(s))
+        for i, tl in enumerate(talk_links):
+            print("  [%d/%d] Target URL: %s" % (i + 1, talk_num, tl))
+            soup = TEDScraper.make_soup(tl)
+            print("          [ GET ] get talk topics")
+            talk_topics.append(self.get_talk_topics(soup))
+            print("          [ GET ] get talk transcript")
             t_url = TEDScraper.get_transcript_url(tl, self.lang)
-            s = TEDScraper.make_soup(t_url)
-            talk_transcript.append(self.get_talk_transcrpit(s))
+            print("          Target transcript URL: %s" % t_url)
+            t_soup = TEDScraper.make_soup(t_url)
+            talk_transcript.append(self.get_talk_transcrpit(t_soup))
+            print("            [ GET ] get transcript time")
+            transcript_time.append(self.get_talk_transcript_time(t_soup))
+
+        # create save dir if not exist
+        save_dir = os.path.expanduser(save_dir)
+        if not os.path.isdir(save_dir):
+            print("[ CREATE ] create dump dir: %s" % save_dir)
+            os.mkdir(save_dir)
 
         # dump talk info
-        print("Now dump talk info ...")
-        for date, title, link, topics, transcript in zip(talk_date, talk_titles, talk_links, talk_topics, talk_transcript):
+        print("[ DUMP ] dump talk info ...")
+        for date, title, link, topics, transcript, t_time in zip(talk_date, talk_titles, talk_links, talk_topics, talk_transcript, transcript_time):
             talk_info = {
                 "posted_date": date,
                 "update_date": update_date,
@@ -407,13 +422,17 @@ class TEDScraper:
                 "talk_link": link,
                 "talk_lang": talk_lang,
                 "talk_topics": topics,
-                "talk_transcript": transcript
+                "talk_transcript": transcript,
+                "transcript_time": t_time
             }
 
-            with open("./dump_files/talk_info_" + title + ".json", "w") as f:
+            filename = os.path.join(save_dir, title + ".json")
+            filename = self._format_filename(filename)
+            print("         dump file: %s" % filename)
+            with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
 
-    def dump_talk_info_al(self, talk_url):
+    def dump_talk_info_al(self, talk_url, save_dir):
         """
         トーク一覧URLから投稿日、データ収集日、トークタイトル、トークへのリンク、
         トークのトピック、利用できる言語すべてのTranscriptをJSONファイルとして出力する。
@@ -436,8 +455,8 @@ class TEDScraper:
         talk_num = len(talk_links)
         print("[ GET ] get talk topics and transcripts ...")
         for i, tl in enumerate(talk_links):
+            print("  [%d/%d] Target URL: %s" % (i + 1, talk_num, tl))
             soup = TEDScraper.make_soup(tl)
-            print("  [%d/%d] Target URL: %s" % (i, talk_num, tl))
             print("          [ GET ] get talk topics")
             talk_topics.append(self.get_talk_topics(soup))
             print("          [ GET ] get all language talk transcript")
@@ -448,27 +467,42 @@ class TEDScraper:
             print("            [ GET ] get transcript time")
             transcript_time.append(self.get_talk_transcript_time(t_soup))
 
-            print("[ DUMP ] dump talk info ... ")
+        # create save dir if not exist
+        save_dir = os.path.expanduser(save_dir)
+        if not os.path.isdir(save_dir):
+            print("[ CREATE ] create dump dir: %s" % save_dir)
+            os.mkdir(save_dir)
 
+        # dump talk info
+        print("[ DUMP ] dump talk info ... ")
         for date, title, link, topics, transcript, t_time in zip(talk_date, talk_titles, talk_links, talk_topics, talk_transcript, transcript_time):
-            print("         Title: %s, Posted Date: %s, Update Date: %s" %
-                  (title, update_date, date))
-            print("         Link Address: %s" % link)
+            # print("         Title: %s, Posted Date: %s, Update Date: %s" %
+            #       (title, update_date, date))
+            # print("         Link Address: %s" % link)
             talk_info = {
                 "posted_date": date,
                 "update_date": update_date,
                 "talk_title": title,
                 "talk_link": link,
                 "talk_topics": topics,
-                "talk_transcript": transcript,
-                "transcript_time": t_time
+                "transcript": transcript,
+                "time": t_time
             }
 
-            filename = "./dump_files/talk_info_al_%s.json" % title
+            filename = os.path.join(save_dir, "al-" + title + ".json")
             filename = self._format_filename(filename)
-            print("  [ DUMP ] Now dump %s" % filename)
+            print("         dump file: %s" % filename)
             with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
+
+    # TODO : save_dir
+    def dump_all_talk_info_al(self, all_talk_links):
+
+        for all_talk_link in all_talk_links:
+            for atl in all_talk_link:
+                # self.dump_talk_info_al(atl, save_dir)
+                self.dump_talk_info_al(
+                    atl, "~/Programing/Python/ted-scraper-dev/02/ted-scraper/dump_files")
 
     def _find_talk_posted_date(self, soup):
         """
