@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # import the module
 from __future__ import print_function
+
 import aerospike
-import pandas as pd
 import json
 import os
 
@@ -22,12 +22,11 @@ except:
 # Records are addressable via a tuple of (namespace, set, key)
 key = ('test', 'foo', 'bar')
 
-dir_list = os.listdir(
-    "/home/cyberangel/Programing/Python/ted-scraper-dev/02/ted-scraper/dump_files")
-
+dir_name = "~/Programing/Python/ted-scraper-dev/02/ted-scraper/dump_files"
+dir_list = os.listdir(dir_name)
 
 for dl in dir_list:
-    with open("/home/cyberangel/Programing/Python/ted-scraper-dev/02/ted-scraper/dump_files/" + dl, "r") as f:
+    with open(os.path.join(dir_name, dl), "r") as f:
         data = json.load(f)
         print("add %s" % dl)
         try:
