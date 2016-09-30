@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 from ted_talks.scraper import TEDScraper
+
+import unittest
+import os
+import json
 
 
 class TEDScraperTest(unittest.TestCase):
@@ -95,10 +98,34 @@ class TEDScraperTest(unittest.TestCase):
         self.assertIsNot(len(available_lang), 0)
 
     def test_dump_talk_info(self):
-        pass
+        run_path = os.path.abspath(os.path.dirname("__file__"))
+        save_dir = os.path.join(run_path, "dump_files")
+
+        TEDScraperTest.ts.dump_talk_info("https://www.ted.com/talks", save_dir)
+
+        dir_list = os.listdir(save_dir)
+        for dl in dir_list:
+            with open(os.path.join(save_dir, dl), 'r') as f:
+                data = json.load(f)
+
+                for v in data.values():
+                    self.assertIsNot(len(v), 0)
 
     def test_dump_talk_info_al(self):
-        pass
+        run_path = os.path.abspath(os.path.dirname("__file__"))
+        save_dir = os.path.join(run_path, "dump_files")
+
+        TEDScraperTest.ts.dump_talk_info_al(
+            "https://www.ted.com/talks", save_dir)
+
+        dir_list = os.listdir(save_dir)
+        for dl in dir_list:
+            with open(os.path.join(save_dir, dl), 'r') as f:
+                data = json.load(f)
+
+                for v in data.values():
+                    self.assertIsNot(len(v), 0)
+
 
 if __name__ == '__main__':
     unittest.main()
