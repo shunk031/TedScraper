@@ -378,16 +378,21 @@ class TEDScraper:
         トーク一覧URLから各トークのトーク情報をJSONファイルとして出力する。
         :param str url:
         """
-        soup = TEDScraper.make_soup(ta_url)
+        save_dir = os.path.expanduser(save_dir)
+        if not os.path.isdir(save_dir):
+            print("[ CREATE ] create dump dir: %s" % save_dir)
+            os.mkdir(save_dir)
+
+        ta_soup = TEDScraper.make_soup(ta_url)
 
         print("[ GET ] get scrape date ...")
         update_date = self._get_scrape_date()
         print("[ GET ] get talk posted date ...")
-        talk_date = self.get_talk_posted_date(soup)
+        talk_date = self.get_talk_posted_date(ta_soup)
         print("[ GET ] get talk titles ...")
-        talk_titles = self.get_talk_titles(soup)
+        talk_titles = self.get_talk_titles(ta_soup)
         print("[ GET ] get talk links ...")
-        talk_links = self.get_talk_links(soup)
+        talk_links = self.get_talk_links(ta_soup)
         print("[ GET ] get talk language ...")
         talk_lang = self.lang
 
@@ -425,8 +430,8 @@ class TEDScraper:
                 "talk_link": link,
                 "talk_lang": talk_lang,
                 "talk_topics": topics,
-                "talk_transcript": transcript,
-                "transcript_time": t_time
+                "transcript": transcript,
+                "time": t_time
             }
 
             filename = os.path.join(save_dir, title + ".json")
