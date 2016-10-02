@@ -34,6 +34,10 @@ class TEDScraperTest(unittest.TestCase):
         talk_titles = TEDScraperTest.ts.get_talk_titles(TEDScraperTest.soup)
         self.assertIsNot(len(talk_titles), 0)
 
+    def test_get_all_talk_page_list(self):
+        page_list = TEDScraperTest.ts.get_all_talk_page_list()
+        self.assertIsNot(len(page_list), 0)
+
     def test_get_talk_posted_date(self):
         talk_posted_date = TEDScraperTest.ts.get_talk_posted_date(
             TEDScraperTest.soup)
