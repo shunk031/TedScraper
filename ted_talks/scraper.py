@@ -166,10 +166,10 @@ class TEDScraper:
         """
         all_talk_links = []
         page_counter = 1
-        page_list = []
-        page_list.append(TEDScraper.BASE_URL)
+        target_url = TEDScraper.BASE_URL
+
         while True:
-            soup = TEDScraper.make_soup(self.target_url)
+            soup = TEDScraper.make_soup(target_url)
             talk_links = self.get_talk_links(soup)
             all_talk_links.append(talk_links)
             next_link = self.get_next_talk_list_a(soup)
@@ -181,11 +181,37 @@ class TEDScraper:
             print("[ FIND ] Now page: %d" % page_counter)
             print("         %s" % next_link)
 
-            self.target_url = next_link
-            page_list.append(next_link)
+            target_url = next_link
             # time.sleep(1)
 
-        return all_talk_links, page_list
+        return all_talk_links
+
+    def get_all_talk_page_list(self):
+        """
+        トーク一覧ページをすべて取得する。
+        :rtype: list
+        """
+        target_url = TEDScraper.BASE_URL
+        page_list = []
+
+        page_counter = 1
+        page_list.append(target_url)
+
+        while True:
+            # print("[DEBUG] target_url: %s" % target_url)
+            ta_soup = TEDScraper.make_soup(target_url)
+            next_link = self.get_next_talk_list_a(ta_soup)
+
+            if next_link is None:
+                break
+
+            page_counter += 1
+            print("[ FIND ] Now page: %d" % page_counter)
+            print("         %s" % next_link)
+            target_url = next_link
+            page_list.append(next_link)
+
+        return page_list
 
     def get_next_talk_list_a(self, soup):
         """
@@ -507,13 +533,16 @@ class TEDScraper:
             with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
 
-    def dump_all_talk_info_al(self, page_list, save_dir):
+    def dump_all_talk_info_al(self, save_dir):
         """
         全トークについて、投稿日、データ収集日、トークタイトル、トークへのリンク、
         トークのトピック、利用できる言語すべてのTranscriptをJSONファイルとして出力する。
         :param list page_list:
         :param str save_dir:
         """
+
+        page_list = self.get_all_talk_page_list()
+
         page_num = len(page_list)
         for i, pl in enumerate(page_list):
             start = time.time()
