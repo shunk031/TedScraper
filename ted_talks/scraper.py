@@ -399,15 +399,21 @@ class TEDScraper:
 
         return available_lang
 
-    def dump_talk_info(self, ta_url, save_dir):
+    def dump_talk_info(self, ta_url, save_dir=None):
         """
         トーク一覧URLから各トークのトーク情報をJSONファイルとして出力する。
         :param str url:
         """
-        save_dir = os.path.expanduser(save_dir)
-        if not os.path.isdir(save_dir):
-            print("[ CREATE ] create dump dir: %s" % save_dir)
-            os.mkdir(save_dir)
+        # create save dir if not exist
+        if save_dir is None:
+            os.mkdir("dump_files")
+            save_dir = "./dump_files"
+            print("[ CREATE ] create default dump dir ...")
+        else:
+            save_dir = os.path.expanduser(save_dir)
+            if not os.path.isdir(save_dir):
+                print("[ CREATE ] create dump dir: %s" % save_dir)
+                os.makedirs(save_dir)
 
         ta_soup = TEDScraper.make_soup(ta_url)
 
@@ -466,17 +472,22 @@ class TEDScraper:
             with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
 
-    def dump_talk_info_al(self, ta_url, save_dir):
+    def dump_talk_info_al(self, ta_url, save_dir=None):
         """
         トーク一覧URLから投稿日、データ収集日、トークタイトル、トークへのリンク、
         トークのトピック、利用できる言語すべてのTranscriptをJSONファイルとして出力する。
         :param str talk_url:
         """
         # create save dir if not exist
-        save_dir = os.path.expanduser(save_dir)
-        if not os.path.isdir(save_dir):
-            print("[ CREATE ] create dump dir: %s" % save_dir)
-            os.mkdir(save_dir)
+        if save_dir is None:
+            os.mkdir("dump_files")
+            save_dir = "./dump_files"
+            print("[ CREATE ] create default dump dir ...")
+        else:
+            save_dir = os.path.expanduser(save_dir)
+            if not os.path.isdir(save_dir):
+                print("[ CREATE ] create dump dir: %s" % save_dir)
+                os.makedirs(save_dir)
 
         ta_soup = TEDScraper.make_soup(ta_url)
 
@@ -533,7 +544,7 @@ class TEDScraper:
             with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
 
-    def dump_all_talk_info_al(self, save_dir):
+    def dump_all_talk_info_al(self, save_dir=None):
         """
         全トークについて、投稿日、データ収集日、トークタイトル、トークへのリンク、
         トークのトピック、利用できる言語すべてのTranscriptをJSONファイルとして出力する。
