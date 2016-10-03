@@ -31,11 +31,14 @@ all_talk_topics = ts.get_all_talk_topics(all_talk_links)
 # get all talk transcript (as list object)
 all_talk_transcripts = ts.get_all_transcripts(all_talk_links)
 
-# dump talk-info json file
-ts.dump_talk_info(target_url)
+# dump talk-info (as json file)
+ts.dump_talk_info(talk_url, save_dir)
 
-# dump talk-info with all languages json file
-ts.dump_talk_info_al(target_url)
+# dump talk-info with all languages (as json file)
+ts.dump_talk_info_al(talk_url, save_dir)
+
+# dump all talk-info with all languages 
+ts.dump_all_talk_info_al(save_dir)
 ```
 
 ## Outputs
@@ -54,14 +57,14 @@ Output result when using `TEDScraper#dump_talk_info()`.
 
 ``` json
 {
-	"Posted Date" : "2016-01-01",
-	"Updated Date" : "2016-01-02",
-	"Talk Title" : "talk-title",
-	"Talk Link Adress" : "https://www.ted.com/talks/hoge",
-	"Language" : "en",
-	"Topics" : ["topic1", "topic2", "topic3"],
-	"Transcript Text" : ["sentence1", "sentence2", "sentence3", "sentence4"],
-	"Transcript Time" : ["00:00", "00:01", "00:12"]
+	"posted_date" : "2016-01-01",
+	"update_date" : "2016-01-02",
+	"talk_title" : "talk-title",
+	"talk_link" : "https://www.ted.com/talks/hoge",
+	"talk_lang" : "en",
+	"talk_topics" : ["topic1", "topic2", "topic3"],
+	"transcript" : ["sentence1", "sentence2", "sentence3", "sentence4"],
+	"time" : ["00:00", "00:01", "00:12"]
 }
 ```
 
@@ -70,16 +73,16 @@ Output result when using `TEDScraper#dump_talk_info_al()`.
 
 ``` json
 {
-	"Posted Date" : "2016-01-01",
-	"Updated Date" : "2016-01-02",
-	"Talk Title" : "talk-title",
-	"Talk Link Adress" : "https://www.ted.com/talks/hoge",
-	"Topics" : ["topic1", "topic2", "topic3"],
-	"Transcript Text" : {
+	"posted_date" : "2016-01-01",
+	"update_date" : "2016-01-02",
+	"talk_title" : "talk-title",
+	"talk_link" : "https://www.ted.com/talks/hoge",
+	"talk_topics" : ["topic1", "topic2", "topic3"],
+	"transcript" : {
 		"en" : ["sentence1", "sentence2", "sentence3", "sentence4"],
 		"ja" : ["文1", "文2", "文3"],
 		"cn" : ["句子1", "句子2", "句子3"]
 	},
-	"Transcript Time" : ["00:00", "00:01", "00:12"]
+	"time" : ["00:00", "00:01", "00:12"]
 }
 ```
