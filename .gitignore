@@ -4,3 +4,4 @@ README.html
 __pycache__/
 .ipynb_checkpoints/
 dump_files/
+ted_scraper.egg-info/
