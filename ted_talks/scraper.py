@@ -23,7 +23,14 @@ class TEDScraper:
         :param str lang="en":
         """
         self.lang = lang
-        self.target_url = TEDScraper.BASE_URL
+        self.target_url = TEDScraper.BASE_URL  # ターゲットとなっているURL
+        self.target_page_list = 0  # トーク一覧ページ数
+        self.target_page_num = 0  # トークページ数
+        self.target_talk = ""  # トークタイトル
+        self.all_talk_page_num = 0  # すべてのトーク数
+        self.start_time = 0
+        self.end_time = 0
+        self.all_processing_time = 0  # 実行時間
 
     @staticmethod
     def make_soup(url):
@@ -107,6 +114,7 @@ class TEDScraper:
         all_talk_titles = []
         for all_talk_link in all_talk_links:
             for atl in all_talk_link:
+                self.target_url = atl
                 print("[DEBUG] get_all_talk_titles()\nTarget URL: %s" % atl)
                 soup = TEDScraper.make_soup(atl)
                 title_list = self.get_talk_titles(soup)
@@ -263,6 +271,7 @@ class TEDScraper:
         all_talk_topics = []
         for all_talk_link in all_talk_links:
             for atl in all_talk_link:
+                self.target_url = atl
                 print("[DEBUG] get_all_talk_topics()\nTarget URL: %s" % atl)
                 ta_soup = TEDScraper.make_soup(atl)
                 topic_list = self.get_talk_topics(ta_soup)
@@ -302,7 +311,7 @@ class TEDScraper:
         for all_talk_link in all_talk_links:
             for atl in all_talk_link:
                 tr_url = TEDScraper.get_transcript_url(atl, self.lang)
-
+                self.target_url = tr_url
                 tr_soup = TEDScraper.make_soup(tr_url)
                 time_list = self.get_talk_transcript_time(tr_soup)
 
@@ -341,6 +350,7 @@ class TEDScraper:
         for all_talk_link in all_talk_links:
             for atl in all_talk_link:
                 tr_url = TEDScraper.get_transcript_url(atl, self.lang)
+                self.target_url = tr_url
                 # print("[DEBUG] get_all_talk_transcripts()\nTarget URL: %s" % target)
 
                 tr_soup = TEDScraper.make_soup(tr_url)
@@ -362,7 +372,16 @@ class TEDScraper:
         :rtype: dict
         """
         t_dict = {}
-        available_lang = self.get_available_language(ta_url)
+
+        try:
+            available_lang = self.get_available_language(ta_url)
+        except AttributeError as e:
+            print(
+                "[DEBUG] in get_all_language_transcript(): Raise AttributeError exception:")
+            print("        %s" % e)
+
+            t_dict["none"] = "no transcript text found."
+            return t_dict
 
         lang_num = len(available_lang)
         for i, al in enumerate(available_lang):
@@ -415,6 +434,7 @@ class TEDScraper:
                 print("[ CREATE ] create dump dir: %s" % save_dir)
                 os.makedirs(save_dir)
 
+        self.target_url = ta_url
         ta_soup = TEDScraper.make_soup(ta_url)
 
         print("[ GET ] get scrape date ...")
@@ -431,26 +451,30 @@ class TEDScraper:
         talk_topics = []
         talk_transcript = []
         transcript_time = []
+
         talk_num = len(talk_links)
+        self.target_page_list = talk_num
+
         print("[ GET ] get talk topics and transcripts ...")
         for i, tl in enumerate(talk_links):
+            self.target_page_num = i + 1
+            self.target_url = tl
             print("  [%d/%d] Target URL: %s" % (i + 1, talk_num, tl))
-            soup = TEDScraper.make_soup(tl)
-            print("          [ GET ] get talk topics")
-            talk_topics.append(self.get_talk_topics(soup))
-            print("          [ GET ] get talk transcript")
-            t_url = TEDScraper.get_transcript_url(tl, self.lang)
-            print("          Target transcript URL: %s" % t_url)
-            t_soup = TEDScraper.make_soup(t_url)
-            talk_transcript.append(self.get_talk_transcrpit(t_soup))
-            print("            [ GET ] get transcript time")
-            transcript_time.append(self.get_talk_transcript_time(t_soup))
+            ta_soup = TEDScraper.make_soup(tl)
 
-        # create save dir if not exist
-        save_dir = os.path.expanduser(save_dir)
-        if not os.path.isdir(save_dir):
-            print("[ CREATE ] create dump dir: %s" % save_dir)
-            os.mkdir(save_dir)
+            print("          [ GET ] get talk topics")
+            talk_topics.append(self.get_talk_topics(ta_soup))
+
+            print("          [ GET ] get talk transcript")
+
+            tr_url = TEDScraper.get_transcript_url(tl, self.lang)
+            self.target_url = tr_url
+            print("          Target transcript URL: %s" % tr_url)
+            tr_soup = TEDScraper.make_soup(tr_url)
+
+            talk_transcript.append(self.get_talk_transcrpit(tr_soup))
+            print("            [ GET ] get transcript time")
+            transcript_time.append(self.get_talk_transcript_time(tr_soup))
 
         # dump talk info
         print("[ DUMP ] dump talk info ...")
@@ -490,6 +514,7 @@ class TEDScraper:
                 print("[ CREATE ] create dump dir: %s" % save_dir)
                 os.makedirs(save_dir)
 
+        self.target_url = ta_url
         ta_soup = TEDScraper.make_soup(ta_url)
 
         print("[ GET ] get scrape date ...")
@@ -504,9 +529,14 @@ class TEDScraper:
         talk_topics = []
         talk_transcript = []
         transcript_time = []
+
         talk_num = len(talk_links)
+        self.target_page_list = talk_num
+
         print("[ GET ] get talk topics and transcripts ...")
         for i, tl in enumerate(talk_links):
+            self.target_page_num = i + 1
+            self.target_url = tl
             print("  [%d/%d] Target URL: %s" % (i + 1, talk_num, tl))
             ta_soup = TEDScraper.make_soup(tl)
 
@@ -517,6 +547,7 @@ class TEDScraper:
             talk_transcript.append(self.get_all_language_transcript(tl))
 
             tr_url = TEDScraper.get_transcript_url(tl)
+            self.target_url = tr_url
             print("          Target transcript URL: %s" % tr_url)
             tr_soup = TEDScraper.make_soup(tr_url)
 
@@ -552,16 +583,51 @@ class TEDScraper:
         :param list page_list:
         :param str save_dir:
         """
+        try:
+            page_list = self.get_all_talk_page_list()
+            page_num = len(page_list)
+            self.all_talk_page_num = page_num
 
-        page_list = self.get_all_talk_page_list()
+            for i, pl in enumerate(page_list):
+                self.start_time = time.time()
+                self.target_page_list = i + 1
+                print("[ PROGRESS ] %d/%d page" % (i + 1, page_num))
+                self.dump_talk_info_al(pl, save_dir)
+                self.end_time = time.time()
+                process_time = (self.end_time - self.start_time) / 60
+                print("[ TIME ] %2.2f [min]" % process_time)
+                self.all_processing_time += process_time
+        except:
+            self.end_time = time.time()
+            process_time = (self.end_time - self.start_time) / 60
+            self.all_processing_time += process_time
 
-        page_num = len(page_list)
-        for i, pl in enumerate(page_list):
-            start = time.time()
-            print("[ PROGRESS ] %d/%d page" % (i + 1, page_num))
-            self.dump_talk_info_al(pl, save_dir)
-            end = time.time()
-            print("[ TIME ] %2.2f [min]" % ((end - start) / 60))
+            import traceback
+            traceback.print_exc()
+
+            print("[DEBUG] Raise except:")
+            print("[DEBUG] Target URL: %s" % self.target_url)
+            print("[DEBUG] Progress: %d / %d / %d" %
+                  (self.target_page_num, self.target_page_list, self.all_talk_page_num))
+            print("[DEBUG] Target page num: %s" % self.target_page_num)
+            print("[DEBUG] Process time: %2.2f [min]" %
+                  self.all_processing_time)
+
+        # page_list = self.get_all_talk_page_list()
+
+        # page_num = len(page_list)
+        # self.all_talk_page_num = page_num
+        # for i, pl in enumerate(page_list):
+        #     self.start_time = time.time()
+        #     self.target_page_list = i + 1
+
+        #     print("[ PROGRESS ] %d/%d page" % (i + 1, page_num))
+        #     self.dump_talk_info_al(pl, save_dir)
+
+        #     self.end_time = time.time()
+        #     process_time = self.end_time - self.start_time
+        #     print("[ TIME ] %2.2f [min]" % (process_time / 60))
+        #     self.all_processing_time += (process_time) / 60
 
     def _find_talk_posted_date(self, soup):
         """
