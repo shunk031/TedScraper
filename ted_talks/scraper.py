@@ -480,9 +480,10 @@ class TEDScraper:
         """
         # create save dir if not exist
         if save_dir is None:
-            os.mkdir("dump_files")
-            save_dir = "./dump_files"
-            print("[ CREATE ] create default dump dir ...")
+            if not os.path.isdir("dump_files"):
+                os.mkdir("dump_files")
+                save_dir = "./dump_files"
+                print("[ CREATE ] create default dump dir ...")
         else:
             save_dir = os.path.expanduser(save_dir)
             if not os.path.isdir(save_dir):
@@ -620,6 +621,7 @@ class TEDScraper:
         return soup.find("data", {"class": "talk-transcript__para__time"})
 
     def _find_transcript_language(self, tr_soup):
+
         return tr_soup.find("select", {"class": "talk-transcript__language"}).find_all("option")
 
     def _format_string(self, s):
