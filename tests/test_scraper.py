@@ -130,6 +130,27 @@ class TEDScraperTest(unittest.TestCase):
                 for v in data.values():
                     self.assertIsNot(len(v), 0)
 
+    def test_specific_url(self):
+        specific_url = [
+            "https://www.ted.com/talks/how_much_does_a_video_weigh"
+        ]
+
+        run_path = os.path.abspath(os.path.dirname("__file__"))
+        save_dir = os.path.join(run_path, "dump_files")
+
+        for su in specific_url:
+            print("Target URL: %s" % su)
+            TEDScraperTest.ts.dump_talk_info_al(su, save_dir)
+
+        dir_list = os.listdir(save_dir)
+        print(dir_list)
+        for dl in dir_list:
+            print("filename: %s" % os.path.join(save_dir, dl))
+            with open(os.path.join(save_dir, dl), 'r') as f:
+                data = json.load(f)
+
+                for v in data.values():
+                    self.assertIsNot(len(v), 0)
 
 if __name__ == '__main__':
     unittest.main()
