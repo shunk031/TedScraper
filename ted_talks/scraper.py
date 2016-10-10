@@ -426,9 +426,10 @@ class TEDScraper:
         """
         # create save dir if not exist
         if save_dir is None:
-            os.mkdir("dump_files")
             save_dir = "./dump_files"
-            print("[ CREATE ] create default dump dir ...")
+            if not os.path.isdir("dump_files"):
+                os.mkdir("dump_files")
+                print("[ CREATE ] create default dump dir ...")
         else:
             save_dir = os.path.expanduser(save_dir)
             if not os.path.isdir(save_dir):
@@ -493,6 +494,7 @@ class TEDScraper:
 
             filename = os.path.join(save_dir, title + ".json")
             filename = self._format_filename(filename)
+
             print("         dump file: %s" % filename)
             with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
@@ -558,9 +560,7 @@ class TEDScraper:
         # dump talk info
         print("[ DUMP ] dump talk info ... ")
         for date, title, link, topics, transcript, t_time in zip(talk_date, talk_titles, talk_links, talk_topics, talk_transcript, transcript_time):
-            # print("         Title: %s, Posted Date: %s, Update Date: %s" %
-            #       (title, update_date, date))
-            # print("         Link Address: %s" % link)
+
             talk_info = {
                 "posted_date": date,
                 "update_date": update_date,
@@ -617,22 +617,6 @@ class TEDScraper:
 
             print("[DEBUG] Process time: %2.2f [min]" %
                   self.all_processing_time)
-
-        # page_list = self.get_all_talk_page_list()
-
-        # page_num = len(page_list)
-        # self.all_talk_page_num = page_num
-        # for i, pl in enumerate(page_list):
-        #     self.start_time = time.time()
-        #     self.target_page_list = i + 1
-
-        #     print("[ PROGRESS ] %d/%d page" % (i + 1, page_num))
-        #     self.dump_talk_info_al(pl, save_dir)
-
-        #     self.end_time = time.time()
-        #     process_time = self.end_time - self.start_time
-        #     print("[ TIME ] %2.2f [min]" % (process_time / 60))
-        #     self.all_processing_time += (process_time) / 60
 
     def _find_talk_posted_date(self, soup):
         """
