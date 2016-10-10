@@ -27,6 +27,7 @@ class TEDScraper:
         self.target_page_list = 0  # トーク一覧ページ数
         self.target_page_num = 0  # トークページ数
         self.target_talk = ""  # トークタイトル
+        self.all_page_list = 0
         self.all_talk_page_num = 0  # すべてのトーク数
         self.start_time = 0
         self.end_time = 0
@@ -453,7 +454,7 @@ class TEDScraper:
         transcript_time = []
 
         talk_num = len(talk_links)
-        self.target_page_list = talk_num
+        self.all_page_list = talk_num
 
         print("[ GET ] get talk topics and transcripts ...")
         for i, tl in enumerate(talk_links):
@@ -504,9 +505,9 @@ class TEDScraper:
         """
         # create save dir if not exist
         if save_dir is None:
+            save_dir = "./dump_files"
             if not os.path.isdir("dump_files"):
                 os.mkdir("dump_files")
-                save_dir = "./dump_files"
                 print("[ CREATE ] create default dump dir ...")
         else:
             save_dir = os.path.expanduser(save_dir)
@@ -531,7 +532,7 @@ class TEDScraper:
         transcript_time = []
 
         talk_num = len(talk_links)
-        self.target_page_list = talk_num
+        self.all_page_list = talk_num
 
         print("[ GET ] get talk topics and transcripts ...")
         for i, tl in enumerate(talk_links):
@@ -572,6 +573,7 @@ class TEDScraper:
 
             filename = os.path.join(save_dir, "al-" + title + ".json")
             filename = self._format_filename(filename)
+
             print("         dump file: %s" % filename)
             with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
@@ -607,9 +609,12 @@ class TEDScraper:
 
             print("[DEBUG] Raise except:")
             print("[DEBUG] Target URL: %s" % self.target_url)
-            print("[DEBUG] Progress: %d / %d / %d" %
-                  (self.target_page_num, self.target_page_list, self.all_talk_page_num))
-            print("[DEBUG] Target page num: %s" % self.target_page_num)
+
+            print("[DEBUG] All progress:%2d/%2d" %
+                  (self.target_page_list, self.all_talk_page_num))
+            print("        Process page:%2d/%2d" %
+                  (self.target_page_num, self.all_page_list))
+
             print("[DEBUG] Process time: %2.2f [min]" %
                   self.all_processing_time)
 
