@@ -294,12 +294,20 @@ class TEDScraper:
         talk_transcript_para = self._find_transcript_para(tr_soup)
 
         time_list = []
-        for ttp in talk_transcript_para:
-            tt = self._find_transcript_time(ttp)
-            transcript_time = self._format_string(tt).replace(" ", "")
-            time_list.append(transcript_time)
+        try:
+            for ttp in talk_transcript_para:
+                tt = self._find_transcript_time(ttp)
+                transcript_time = self._format_string(tt).replace(" ", "")
+                time_list.append(transcript_time)
 
-        return time_list
+            return time_list
+
+        except AttributeError as e:
+            print(
+                "[DEBUG] in get_talk_transcript_time(): Raise AttributeError exception:")
+            print("        %s" % e)
+            time_list.apppend("no time data found.")
+            return time_list
 
     def get_all_talk_transcript_time(self, all_talk_links):
         """
