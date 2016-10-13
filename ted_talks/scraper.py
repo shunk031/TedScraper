@@ -586,7 +586,7 @@ class TEDScraper:
             with open(filename, "w") as f:
                 json.dump(talk_info, f, indent=2)
 
-    def dump_all_talk_info_al(self, save_dir=None):
+    def dump_all_talk_info_al(self, save_dir=None, page_list=None):
         """
         全トークについて、投稿日、データ収集日、トークタイトル、トークへのリンク、
         トークのトピック、利用できる言語すべてのTranscriptをJSONファイルとして出力する。
@@ -594,7 +594,9 @@ class TEDScraper:
         :param str save_dir:
         """
         try:
-            page_list = self.get_all_talk_page_list()
+            if page_list is None:
+                page_list = self.get_all_talk_page_list()
+
             page_num = len(page_list)
             self.all_talk_page_num = page_num
 
