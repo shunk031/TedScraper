@@ -291,10 +291,10 @@ class TEDScraper:
         :param bs4.BeautifulSoup soup:
         :rtype: list
         """
-        talk_transcript_para = self._find_transcript_para(tr_soup)
-
-        time_list = []
         try:
+            talk_transcript_para = self._find_transcript_para(tr_soup)
+
+            time_list = []
             for ttp in talk_transcript_para:
                 tt = self._find_transcript_time(ttp)
                 transcript_time = self._format_string(tt).replace(" ", "")
