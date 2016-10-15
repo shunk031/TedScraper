@@ -306,7 +306,7 @@ class TEDScraper:
             print(
                 "[DEBUG] in get_talk_transcript_time(): Raise AttributeError exception:")
             print("        %s" % e)
-            time_list.apppend("no time data found.")
+            time_list.append("no time data found.")
             return time_list
 
     def get_all_talk_transcript_time(self, all_talk_links):
