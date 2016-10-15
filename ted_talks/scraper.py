@@ -24,6 +24,7 @@ class TEDScraper:
         """
         self.lang = lang
         self.target_url = TEDScraper.BASE_URL  # ターゲットとなっているURL
+        self.target_page_list_url = ""
         self.target_page_list = 0  # トーク一覧ページ数
         self.target_page_num = 0  # トークページ数
         self.target_talk = ""  # トークタイトル
@@ -601,6 +602,7 @@ class TEDScraper:
             self.all_talk_page_num = page_num
 
             for i, pl in enumerate(page_list):
+                self.target_page_list_url = pl
                 self.start_time = time.time()
                 self.target_page_list = i + 1
                 print("[ PROGRESS ] %d/%d page" % (i + 1, page_num))
@@ -618,8 +620,8 @@ class TEDScraper:
             traceback.print_exc()
 
             print("[DEBUG] Raise except:")
+            print("[DEBUG] Target page list url: %s" % self.target_page_list_url)
             print("[DEBUG] Target URL: %s" % self.target_url)
-
             print("[DEBUG] All progress:%2d/%2d" %
                   (self.target_page_list, self.all_talk_page_num))
             print("        Process page:%2d/%2d" %
