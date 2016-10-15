@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from bs4 import BeautifulSoup
-from urllib.request import urlopen
-from urllib.parse import urljoin
-from urllib.error import HTTPError
-
 import time
 import re
 import datetime
 import json
 import os
 
+from urllib.request import urlopen
+from urllib.parse import urljoin
+from urllib.error import HTTPError
+from bs4 import BeautifulSoup
 
 class TEDScraper:
 
