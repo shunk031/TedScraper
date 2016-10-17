@@ -704,7 +704,7 @@ class TEDScraper:
         :param str s:
         :rtype: str
         """
-        return s.replace(" ", "_")
+        return s.replace(" ", "_").replace("/", "_")
 
     def _get_scrape_date(self):
         """
