@@ -11,6 +11,7 @@ from urllib.parse import urljoin
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 
+
 class TEDScraper:
 
     BASE_URL = "https://www.ted.com/talks"
@@ -578,8 +579,8 @@ class TEDScraper:
                 "transcript": transcript,
                 "time": t_time
             }
-            
-            title = title.repalce("/", "_")
+
+            title = title.replace("/", "_")
             filename = os.path.join(save_dir, "al-" + title + ".json")
             filename = self._format_filename(filename)
 
@@ -620,7 +621,8 @@ class TEDScraper:
             traceback.print_exc()
 
             print("[DEBUG] Raise except:")
-            print("[DEBUG] Target page list url: %s" % self.target_page_list_url)
+            print("[DEBUG] Target page list url: %s" %
+                  self.target_page_list_url)
             print("[DEBUG] Target URL: %s" % self.target_url)
             print("[DEBUG] All progress:%2d/%2d" %
                   (self.target_page_list, self.all_talk_page_num))
