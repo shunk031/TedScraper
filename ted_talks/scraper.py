@@ -578,7 +578,8 @@ class TEDScraper:
                 "transcript": transcript,
                 "time": t_time
             }
-
+            
+            title = title.repalce("/", "_")
             filename = os.path.join(save_dir, "al-" + title + ".json")
             filename = self._format_filename(filename)
 
@@ -704,7 +705,7 @@ class TEDScraper:
         :param str s:
         :rtype: str
         """
-        return s.replace(" ", "_").replace("/", "_")
+        return s.replace(" ", "_")
 
     def _get_scrape_date(self):
         """
