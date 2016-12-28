@@ -699,7 +699,7 @@ class TEDScraper:
         :param str s:
         :rtype: str
         """
-        return s.get_text().replace("\n", "")
+        return s.get_text().replace("\n", " ")
 
     def _format_filename(self, s):
         """
