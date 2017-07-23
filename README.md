@@ -1,6 +1,6 @@
 # TED Talks Scraper
 
-[![Build Status](https://travis-ci.org/shunk031/ted-scraper.svg?branch=master)](https://travis-ci.org/shunk031/ted-scraper)
+[![Build Status](https://travis-ci.org/shunk031/TedScraper.svg?branch=master)](https://travis-ci.org/shunk031/TedScraper)
 
 Scraper for [TED Talks](https://www.ted.com/talks).
 
