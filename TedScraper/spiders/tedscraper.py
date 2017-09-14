@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from urllib.request import urlopen
+
 import scrapy
 from TedScraper.items import TedscraperItem
+from bs4 import BeautifulSoup
 
 
 class TedscraperSpider(scrapy.Spider):
@@ -22,7 +25,6 @@ class TedscraperSpider(scrapy.Spider):
 
         urls = response.css(self.elements['talk_links']).extract()
         for url in urls:
-            # print("target url: {}".format(response.urljoin(url)))
             yield scrapy.Request(response.urljoin(url), self.parse_talks, dont_filter=True)
 
     def parse_talks(self, response):
@@ -33,23 +35,31 @@ class TedscraperSpider(scrapy.Spider):
         item['talk_topics'] = response.xpath(self.elements['talk_topics']).extract()
         item['upload_date'] = response.xpath(self.elements['upload_date']).extract_first()
         item['langs'] = response.xpath(self.elements['langs']).extract()
+        item['langs'].remove('x-default')
 
-        item['transcript'] = {}
+        item['transcripts'] = {}
+        item['times'] = {}
         for lang in item['langs']:
+
             transcript_abs_url = '{}/transcript?language={}'.format(response.url, lang)
-
             transcript_url = response.urljoin(transcript_abs_url)
-            print("transcript url: {}".format(transcript_url))
+            with urlopen(transcript_url) as res:
+                html = res.read()
 
-            transcript = scrapy.Request(transcript_url, callback=self.parse_transcript)
-            item['transcript'][lang] = transcript
+            soup = BeautifulSoup(html, 'lxml')
+            transcripts = []
+            times = []
+            for div_Grid__cell in self.parse_transcripts(soup):
+                p = div_Grid__cell.find('p')
+                if p is not None:
+                    transcripts.append(p.get_text())
+                else:
+                    times.append(div_Grid__cell.get_text())
+
+            item['transcripts'][lang] = transcripts[:-1]
+            item['times'][lang] = times
 
         yield item
 
-    def parse_transcript(self, response):
-        print("CALLED")
-        print(response.css(self.elements['transcript']).extract())
-        print("response body: {}".format(response.body))
-        print(type(response.css(self.elements['transcript']).extract()))
-
-        yield response.css(self.elements['transcript']).extract()
+    def parse_transcripts(self, soup):
+        return soup.find_all('div', {'class': 'Grid__cell'})
