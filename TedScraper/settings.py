@@ -17,6 +17,9 @@ NEWSPIDER_MODULE = 'TedScraper.spiders'
 # Get an output in UTF-8 encoded unicode
 FEED_EXPORT_ENCODING = 'utf-8'
 
+# Indent output json file
+FEED_EXPORT_INDENT = 2
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'TedScraper (+http://www.yourdomain.com)'
 USER_AGENT = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
@@ -30,7 +33,7 @@ ROBOTSTXT_OBEY = True
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 4
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -67,9 +70,11 @@ DOWNLOAD_DELAY = 3
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'TedScraper.pipelines.TedscraperPipeline': 300,
-# }
+ITEM_PIPELINES = {
+    # 'TedScraper.pipelines.TedscraperPipeline': 300,
+    'TedScraper.pipelines.FormatTranscripts': 100,
+    'TedScraper.pipelines.FormatTimes': 200,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
