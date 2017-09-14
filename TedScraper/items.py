@@ -15,5 +15,5 @@ class TedscraperItem(scrapy.Item):
     talk_topics = scrapy.Field()
     upload_date = scrapy.Field()
     langs = scrapy.Field()
-    transcript = scrapy.Field()
-    time = scrapy.Field()
+    transcripts = scrapy.Field()
+    times = scrapy.Field()
